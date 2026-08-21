@@ -31,6 +31,9 @@ public partial class App : System.Windows.Application
         }
 
         Services = new AppServices();
+        // Apply the same native Windows caption bar to every WPF window,
+        // including dialogs created after the main window.
+        EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent, new RoutedEventHandler(OnAnyWindowLoaded));
         MainAppWindow = new MainWindow(Services);
         MainWindow = MainAppWindow;
         MainAppWindow.SourceInitialized += OnMainWindowSourceInitialized;
@@ -42,6 +45,12 @@ public partial class App : System.Windows.Application
         };
         ConfigureTrayIcon();
         MainAppWindow.Show();
+    }
+
+    private void OnAnyWindowLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is Window window)
+            Services.Theme.ApplyWindowChrome(window);
     }
 
     private async void OnMainWindowSourceInitialized(object? sender, EventArgs e)

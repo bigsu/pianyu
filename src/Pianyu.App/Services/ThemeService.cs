@@ -13,28 +13,32 @@ public sealed class ThemeService : IDisposable
 
     private static readonly IReadOnlyDictionary<string, string> DarkPalette = new Dictionary<string, string>
     {
-        ["Canvas"] = "#101416",
-        ["Surface"] = "#171D1F",
-        ["Raised"] = "#1E2528",
-        ["Hover"] = "#263034",
-        ["Border"] = "#344044",
-        ["BorderStrong"] = "#526267",
-        ["TextPrimary"] = "#F1F6F4",
-        ["TextSecondary"] = "#AEBAB7",
-        ["TextMuted"] = "#7F8D89",
-        ["Accent"] = "#35D0B0",
-        ["AccentHover"] = "#55E1C4",
-        ["AccentDark"] = "#123E36",
-        ["AccentForeground"] = "#071512",
-        ["Warning"] = "#E9AC56",
-        ["Danger"] = "#F07070",
-        ["Success"] = "#63D693"
+        ["Canvas"] = "#1A1A19",
+        ["Header"] = "#1A1A19",
+        ["Surface"] = "#2E2E2D",
+        ["Search"] = "#262625",
+        ["Raised"] = "#242424",
+        ["Hover"] = "#2B2B2A",
+        ["Border"] = "#363535",
+        ["BorderStrong"] = "#4A4A49",
+        ["TextPrimary"] = "#F0F0EF",
+        ["TextSecondary"] = "#B4B4B2",
+        ["TextMuted"] = "#8E8E8C",
+        ["Accent"] = "#9DE1ED",
+        ["AccentHover"] = "#B2EAF2",
+        ["AccentDark"] = "#24393C",
+        ["AccentForeground"] = "#101A1B",
+        ["Warning"] = "#D6A051",
+        ["Danger"] = "#E77B78",
+        ["Success"] = "#65C68B"
     };
 
     private static readonly IReadOnlyDictionary<string, string> LightPalette = new Dictionary<string, string>
     {
         ["Canvas"] = "#F4F7F6",
+        ["Header"] = "#F4F7F6",
         ["Surface"] = "#FFFFFF",
+        ["Search"] = "#EAF0EE",
         ["Raised"] = "#EAF0EE",
         ["Hover"] = "#DCE8E4",
         ["Border"] = "#C5D1CE",

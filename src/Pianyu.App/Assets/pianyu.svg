@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="52" fill="#101416"/>
-  <rect x="32" y="32" width="192" height="192" rx="38" fill="#35D0B0"/>
-  <path d="M76 78h104a12 12 0 0 1 12 12v12a12 12 0 0 1-12 12H76a12 12 0 0 1-12-12V90a12 12 0 0 1 12-12Zm0 58h72a12 12 0 0 1 12 12v12a12 12 0 0 1-12 12H76a12 12 0 0 1-12-12v-12a12 12 0 0 1 12-12Z" fill="#101416"/>
-  <path d="M160 172h20l-20 22Z" fill="#101416"/>
+  <!-- Transparent canvas: the teal mark must not carry a dark outer edge. -->
+  <g transform="translate(-21.3333 -21.3333) scale(1.1666667)">
+    <rect x="32" y="32" width="192" height="192" rx="38" fill="#35D0B0"/>
+    <path d="M76 78h104a12 12 0 0 1 12 12v12a12 12 0 0 1-12 12H76a12 12 0 0 1-12-12V90a12 12 0 0 1 12-12Zm0 58h72a12 12 0 0 1 12 12v12a12 12 0 0 1-12 12H76a12 12 0 0 1-12-12v-12a12 12 0 0 1 12-12Z" fill="#101416"/>
+    <path d="M160 172h20l-20 22Z" fill="#101416"/>
+  </g>
 </svg>
