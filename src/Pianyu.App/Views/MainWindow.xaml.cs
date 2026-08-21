@@ -1,6 +1,6 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using Pianyu.App.ViewModels;
 using Pianyu.App.Services;
@@ -25,7 +25,7 @@ public partial class MainWindow : Window
         Loaded += async (_, _) =>
         {
             await _viewModel.InitializeAsync();
-            SearchBox.Focus();
+            RootPanel.Focus();
         };
         PreviewKeyDown += OnPreviewKeyDown;
         services.Clipboard.CandidateAvailable += (_, text) => Dispatcher.Invoke(() => OpenClipboardCapture(text, true));
@@ -71,10 +71,11 @@ public partial class MainWindow : Window
         finally { _captureOpen = false; }
     }
 
-    private async Task CopySelectedAsync(bool closeAfter, bool directPaste)
+    private Task CopySelectedAsync(bool closeAfter, bool directPaste) =>
+        _viewModel.SelectedSnippet is { } snippet ? CopySnippetAsync(snippet, closeAfter, directPaste) : Task.CompletedTask;
+
+    private async Task CopySnippetAsync(Snippet snippet, bool closeAfter, bool directPaste)
     {
-        var snippet = _viewModel.SelectedSnippet;
-        if (snippet is null) return;
         var text = snippet.Content;
         var variables = TemplateEngine.Parse(text);
         if (variables.Count > 0)
@@ -88,7 +89,7 @@ public partial class MainWindow : Window
         {
             Hide();
             var result = await _services.DirectPaste.PasteAsync(text, _pasteTarget);
-            await _viewModel.RecordUseAsync(snippet, result.Success ? "paste" : "copy-fallback");
+            _ = RecordUseBestEffortAsync(snippet, result.Success ? "paste" : "copy-fallback");
             if (!result.Success)
             {
                 ShowAndActivate();
@@ -102,9 +103,15 @@ public partial class MainWindow : Window
             ShowStatus("剪贴板暂时被占用，请重试", true);
             return;
         }
-        await _viewModel.RecordUseAsync(snippet, "copy");
         ShowStatus("已复制");
         if (closeAfter) Hide();
+        _ = RecordUseBestEffortAsync(snippet, "copy");
+    }
+
+    private async Task RecordUseBestEffortAsync(Snippet snippet, string action)
+    {
+        try { await _viewModel.RecordUseAsync(snippet, action); }
+        catch { /* 使用统计失败不能阻塞复制或直接粘贴。 */ }
     }
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
@@ -118,12 +125,12 @@ public partial class MainWindow : Window
             case "close": Hide(); e.Handled = true; return;
             case "new": OpenEditor(null); e.Handled = true; return;
             case "search": SearchBox.Focus(); SearchBox.SelectAll(); e.Handled = true; return;
-            case "edit": OpenEditor(_viewModel.SelectedSnippet); e.Handled = true; return;
+            case "edit" when !SearchBox.IsKeyboardFocused: OpenEditor(_viewModel.SelectedSnippet); e.Handled = true; return;
             case "undo": _viewModel.UndoDeleteCommand.Execute(null); e.Handled = true; return;
-            case "delete" when _viewModel.SelectedSnippet is not null: _viewModel.DeleteCommand.Execute(null); e.Handled = true; return;
+            case "delete" when _viewModel.SelectedSnippet is not null && !SearchBox.IsKeyboardFocused: _viewModel.DeleteCommand.Execute(null); e.Handled = true; return;
             case "copy_close" when _viewModel.SelectedSnippet is not null: _ = CopySelectedAsync(_viewModel.Settings.CloseAfterCopy, false); e.Handled = true; return;
             case "paste" when _viewModel.SelectedSnippet is not null: _ = CopySelectedAsync(false, true); e.Handled = true; return;
-            case "copy_keep" when _viewModel.SelectedSnippet is not null: _ = CopySelectedAsync(false, false); e.Handled = true; return;
+            case "copy_keep" when _viewModel.SelectedSnippet is not null && !SearchBox.IsKeyboardFocused: _ = CopySelectedAsync(false, false); e.Handled = true; return;
         }
         if (e.Key == Key.Down && SearchBox.IsKeyboardFocused && ResultList.Items.Count > 0)
         {
@@ -146,13 +153,30 @@ public partial class MainWindow : Window
     }
 
     private void NewSnippet_OnClick(object sender, RoutedEventArgs e) => OpenEditor(null);
-    private void EditSnippet_OnClick(object sender, RoutedEventArgs e) => OpenEditor(_viewModel.SelectedSnippet);
+    private void CopyItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: Snippet snippet }) return;
+        _viewModel.SelectedSnippet = snippet;
+        _ = CopySnippetAsync(snippet, false, false);
+        e.Handled = true;
+    }
+    private void EditItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: Snippet snippet }) return;
+        _viewModel.SelectedSnippet = snippet;
+        OpenEditor(snippet);
+        e.Handled = true;
+    }
+    private void DeleteItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: Snippet snippet }) return;
+        _viewModel.SelectedSnippet = snippet;
+        _viewModel.DeleteCommand.Execute(null);
+        e.Handled = true;
+    }
+    private void ActionButton_OnPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e) => e.Handled = true;
     private void Clipboard_OnClick(object sender, RoutedEventArgs e) => OpenClipboardCapture();
-    private void CopyClose_OnClick(object sender, RoutedEventArgs e) => _ = CopySelectedAsync(true, false);
     private void ResultList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) => _ = CopySelectedAsync(_viewModel.Settings.CloseAfterCopy, false);
     private void Settings_OnClick(object sender, RoutedEventArgs e) { var window = new SettingsWindow(_services) { Owner = this }; window.ShowDialog(); _ = _viewModel.InitializeAsync(); }
     private void Manage_OnClick(object sender, RoutedEventArgs e) { var window = new ManagementWindow(_services) { Owner = this }; window.ShowDialog(); _ = _viewModel.SearchAsync(); }
-    private void Close_OnClick(object sender, RoutedEventArgs e) => ((App)System.Windows.Application.Current).RequestMainClose();
-    private void Minimize_OnClick(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
-    private void TitleBar_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) { if (e.ClickCount == 2) WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized; else DragMove(); }
 }

@@ -36,7 +36,12 @@ public sealed class ClipboardService : IDisposable
         {
             try
             {
-                Clipboard.SetText(text, TextDataFormat.UnicodeText);
+                // copy=true flushes the data into the Windows clipboard instead of
+                // leaving it dependent on this process as the clipboard owner.
+                var data = new DataObject();
+                data.SetData(DataFormats.UnicodeText, text);
+                data.SetData(DataFormats.Text, text);
+                Clipboard.SetDataObject(data, true);
                 return true;
             }
             catch (ExternalException)
