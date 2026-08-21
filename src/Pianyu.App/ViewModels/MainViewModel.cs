@@ -68,7 +68,7 @@ public sealed class MainViewModel : ObservableObject
     public bool HasResults => Results.Count > 0;
     public bool HasSelection => SelectedSnippet is not null;
     public string EmptyTitle => string.IsNullOrWhiteSpace(Query) ? "保存第一条片语" : "没有找到匹配片段";
-    public string EmptyMessage => string.IsNullOrWhiteSpace(Query) ? "按 Ctrl+N 新建，或按 Ctrl+Alt+S 从剪贴板录入。" : "尝试更短的词、拼音首字母或标签。";
+    public string EmptyMessage => string.IsNullOrWhiteSpace(Query) ? "按 Ctrl+N 新建，或按 Ctrl+Alt+S 读取当前剪贴板。" : "尝试更短的词、拼音首字母或标签。";
     public string StatusMessage { get => _statusMessage; private set => SetProperty(ref _statusMessage, value); }
     public bool IsStatusError { get => _isStatusError; private set => SetProperty(ref _isStatusError, value); }
     public bool HasStatus => !string.IsNullOrWhiteSpace(StatusMessage);

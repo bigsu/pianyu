@@ -82,7 +82,7 @@
                                 </ItemsControl>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Style="{StaticResource SnippetActionButton}" Content="&#xE8C8;" FontFamily="Segoe MDL2 Assets" Tag="{Binding}" Click="CopyItem_OnClick" PreviewMouseDoubleClick="ActionButton_OnPreviewMouseDoubleClick" ToolTip="复制（空格）" AutomationProperties.Name="复制片段" Margin="0,0,3,0" />
+                                <Button Style="{StaticResource SnippetActionButton}" Content="&#xE8C8;" FontFamily="Segoe MDL2 Assets" Tag="{Binding}" Click="CopyItem_OnClick" PreviewMouseDoubleClick="ActionButton_OnPreviewMouseDoubleClick" ToolTip="复制并保持打开（Enter）" AutomationProperties.Name="复制并保持打开" Margin="0,0,3,0" />
                                 <Button Style="{StaticResource SnippetActionButton}" Content="&#xE70F;" FontFamily="Segoe MDL2 Assets" Tag="{Binding}" Click="EditItem_OnClick" PreviewMouseDoubleClick="ActionButton_OnPreviewMouseDoubleClick" ToolTip="编辑（E）" AutomationProperties.Name="编辑片段" Margin="0,0,3,0" />
                                 <Button Style="{StaticResource SnippetActionButton}" Content="&#xE74D;" FontFamily="Segoe MDL2 Assets" Tag="{Binding}" Click="DeleteItem_OnClick" PreviewMouseDoubleClick="ActionButton_OnPreviewMouseDoubleClick" ToolTip="删除（Del）" AutomationProperties.Name="删除片段" />
                             </StackPanel>
@@ -100,7 +100,7 @@
 
         <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" Padding="16,10">
             <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" FontFamily="Cascadia Mono, Consolas" FontSize="11" HorizontalAlignment="Center"
-                       Text="↑↓ 选择 · Enter 复制 · Shift+Enter 直接粘贴 · Ctrl+N 新建 · Esc 关闭" />
+                       Text="↑↓ 选择 · 空格 复制并关闭 · Enter 复制并保持打开 · Shift+Enter 直接粘贴 · Ctrl+N 新建 · Esc 关闭" />
         </Border>
     </Grid>
 </Window>

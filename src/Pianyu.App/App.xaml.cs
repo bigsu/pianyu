@@ -68,6 +68,12 @@ public partial class App : System.Windows.Application
         try
         {
             stored = await Services.Repository.GetShortcutsAsync();
+            if (ShortcutService.TryMigrateLegacyCopyGestures(stored, out var migrated))
+            {
+                await Services.Repository.SaveShortcutAsync("copy_close", migrated["copy_close"]);
+                await Services.Repository.SaveShortcutAsync("copy_keep", migrated["copy_keep"]);
+                stored = migrated;
+            }
             CurrentSettings = await Services.Repository.GetAppSettingsAsync();
             ApplyVisualSettings(CurrentSettings);
         }

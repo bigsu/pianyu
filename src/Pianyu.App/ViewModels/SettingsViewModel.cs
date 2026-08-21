@@ -14,7 +14,16 @@ public sealed class ShortcutRowViewModel : ObservableObject
     public required string DefaultGesture { get; init; }
     public required ShortcutScope Scope { get; init; }
     public string ScopeText => Scope == ShortcutScope.Global ? "全局" : "窗口内";
-    public string Gesture { get => _gesture; set => SetProperty(ref _gesture, value); }
+    public string Gesture
+    {
+        get => _gesture;
+        set
+        {
+            if (!SetProperty(ref _gesture, value)) return;
+            OnPropertyChanged(nameof(DisplayGesture));
+        }
+    }
+    public string DisplayGesture => string.IsNullOrWhiteSpace(Gesture) ? "点击录制" : Gesture.Replace("Space", "空格", StringComparison.OrdinalIgnoreCase);
     public string Error { get => _error; set { SetProperty(ref _error, value); OnPropertyChanged(nameof(HasError)); } }
     public bool HasError => !string.IsNullOrWhiteSpace(Error);
     public bool IsRecording { get => _isRecording; set => SetProperty(ref _isRecording, value); }

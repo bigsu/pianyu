@@ -21,9 +21,9 @@ public sealed class ShortcutService : IDisposable
         new("new", "新建片段", "Ctrl+N", "Ctrl+N", ShortcutScope.Local),
         new("capture", "保存当前剪贴板", "Ctrl+Alt+S", "Ctrl+Alt+S", ShortcutScope.Global),
         new("search", "聚焦搜索", "Ctrl+F", "Ctrl+F", ShortcutScope.Local),
-        new("copy_close", "复制并关闭", "Enter", "Enter", ShortcutScope.Local),
+        new("copy_close", "复制并关闭", "Space", "Space", ShortcutScope.Local),
         new("paste", "直接粘贴", "Shift+Enter", "Shift+Enter", ShortcutScope.Local),
-        new("copy_keep", "复制并保持打开", "Space", "Space", ShortcutScope.Local),
+        new("copy_keep", "复制并保持打开", "Enter", "Enter", ShortcutScope.Local),
         new("edit", "编辑片段", "E", "E", ShortcutScope.Local),
         new("delete", "删除片段", "Del", "Del", ShortcutScope.Local),
         new("undo", "撤销删除", "Ctrl+Z", "Ctrl+Z", ShortcutScope.Local)
@@ -67,6 +67,16 @@ public sealed class ShortcutService : IDisposable
     }
 
     public static bool GestureMatches(string configured, string actual) => string.Equals(Normalize(configured), Normalize(actual), StringComparison.OrdinalIgnoreCase);
+
+    public static bool TryMigrateLegacyCopyGestures(IReadOnlyDictionary<string, string> stored, out Dictionary<string, string> migrated)
+    {
+        migrated = new Dictionary<string, string>(stored, StringComparer.OrdinalIgnoreCase);
+        if (!stored.TryGetValue("copy_close", out var close) || !stored.TryGetValue("copy_keep", out var keep) ||
+            !GestureMatches(close, "Enter") || !GestureMatches(keep, "Space")) return false;
+        migrated["copy_close"] = "Space";
+        migrated["copy_keep"] = "Enter";
+        return true;
+    }
 
     public static bool TryParseGesture(string gesture, out HotKeyModifiers modifiers, out Key key, out string error)
     {
