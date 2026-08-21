@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pianyu.Core", "src\Pianyu.Core\Pianyu.Core.csproj", "{151CB8C0-2A18-4DBA-A439-3397F0FBF8B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pianyu.App", "src\Pianyu.App\Pianyu.App.csproj", "{EA6E324D-0C70-4517-B716-A4964CCAE72D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pianyu.Tests", "tests\Pianyu.Tests\Pianyu.Tests.csproj", "{0B2A55E1-5894-43ED-8644-9B4BF73B6DA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{151CB8C0-2A18-4DBA-A439-3397F0FBF8B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{151CB8C0-2A18-4DBA-A439-3397F0FBF8B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{151CB8C0-2A18-4DBA-A439-3397F0FBF8B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{151CB8C0-2A18-4DBA-A439-3397F0FBF8B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA6E324D-0C70-4517-B716-A4964CCAE72D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA6E324D-0C70-4517-B716-A4964CCAE72D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA6E324D-0C70-4517-B716-A4964CCAE72D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA6E324D-0C70-4517-B716-A4964CCAE72D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B2A55E1-5894-43ED-8644-9B4BF73B6DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B2A55E1-5894-43ED-8644-9B4BF73B6DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B2A55E1-5894-43ED-8644-9B4BF73B6DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B2A55E1-5894-43ED-8644-9B4BF73B6DA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

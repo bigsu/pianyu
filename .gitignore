@@ -1,0 +1,31 @@
+# Build outputs
+**/bin/
+**/obj/
+.vs/
+artifacts/
+
+# IDE and user-local files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local databases and secrets
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*
+secrets.json
+appsettings.Local.json
+
+# Local product/design working files
+PRODUCT.md
+SOLUTION.md
+DESIGN_BRIEF.md
+design/
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
