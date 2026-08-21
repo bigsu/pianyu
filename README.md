@@ -21,7 +21,7 @@ Download the latest `pianyu.exe` from [Releases](https://github.com/bigsu/pianyu
 
 ## Highlights
 
-- Create, edit, favorite, pin, tag, soft-delete, and undo deletion.
+- Create, edit, favorite, pin, tag, and permanently delete snippets.
 - SQLite FTS5 search across titles, content, and tags.
 - Pinyin initials, typo tolerance, common abbreviations, and learned personal aliases.
 - Dynamic ranking using relevance, recency, copy count, favorites, pins, and foreground-app context.
@@ -45,7 +45,6 @@ Download the latest `pianyu.exe` from [Releases](https://github.com/bigsu/pianyu
 | New snippet | `Ctrl+N` |
 | Edit snippet | `Ctrl+E` |
 | Delete snippet | `Delete` |
-| Undo deletion | `Ctrl+Z` |
 
 All shortcuts can be changed in **Settings → Shortcuts**.
 
