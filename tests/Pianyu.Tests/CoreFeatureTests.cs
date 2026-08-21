@@ -125,5 +125,9 @@ public sealed class TextFeatureTests
         Assert.AreEqual("第一段", detail.Blocks[0].Text);
         Assert.AreEqual("第二段", detail.Blocks[1].Text);
         Assert.AreEqual("# 第三段", detail.Blocks[2].Text);
+
+        detail.ToggleBlock(detail.Blocks[2]);
+        detail.ToggleBlock(detail.Blocks[0]);
+        Assert.AreEqual("# 第三段" + Environment.NewLine + Environment.NewLine + "第一段", detail.GetSelectedText());
     }
 }
