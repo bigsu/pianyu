@@ -100,19 +100,28 @@ public sealed class SnippetRepository(DatabaseService database)
         await using var connection = await database.OpenWritableAsync(cancellationToken);
         await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
 
+        long? existingId = null;
+        var existingDeleted = false;
         await using (var duplicate = connection.CreateCommand())
         {
             duplicate.Transaction = (SqliteTransaction)transaction;
-            duplicate.CommandText = "SELECT id FROM snippets WHERE content_hash=$hash AND id<>$id AND deleted_at IS NULL LIMIT 1;";
+            duplicate.CommandText = "SELECT id,deleted_at FROM snippets WHERE content_hash=$hash AND id<>$id LIMIT 1;";
             duplicate.Parameters.AddWithValue("$hash", hash);
             duplicate.Parameters.AddWithValue("$id", snippet.Id);
-            var existingId = await duplicate.ExecuteScalarAsync(cancellationToken);
-            if (existingId is not null)
+            await using var reader = await duplicate.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
             {
-                await transaction.RollbackAsync(cancellationToken);
-                return (await GetByIdAsync(Convert.ToInt64(existingId), cancellationToken), true);
+                existingId = reader.GetInt64(0);
+                existingDeleted = !reader.IsDBNull(1);
             }
         }
+
+        if (existingId is not null && (!existingDeleted || snippet.Id != 0))
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return (await GetByIdAsync(existingId.Value, cancellationToken), true);
+        }
+        if (existingId is not null && existingDeleted) snippet.Id = existingId.Value;
 
         var now = DateTimeOffset.Now;
         if (snippet.Id == 0)
