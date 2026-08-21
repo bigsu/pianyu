@@ -42,6 +42,12 @@ public partial class SettingsWindow : Window
         ApiKeyBox.Password = stored.ApiKey;
         _viewModel.ConnectionStatus = string.IsNullOrWhiteSpace(stored.ApiKey) ? "未配置" : "已配置，未测试";
         var gestures = await _services.Repository.GetShortcutsAsync();
+        if (ShortcutService.TryMigrateLegacyCopyGestures(gestures, out var migrated))
+        {
+            await _services.Repository.SaveShortcutAsync("copy_close", migrated["copy_close"]);
+            await _services.Repository.SaveShortcutAsync("copy_keep", migrated["copy_keep"]);
+            gestures = migrated;
+        }
         _viewModel.Shortcuts.Clear();
         foreach (var item in ShortcutService.Defaults)
         {

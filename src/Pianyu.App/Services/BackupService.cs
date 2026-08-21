@@ -86,7 +86,7 @@ public sealed class BackupService(AppPaths paths, DatabaseService database, Snip
         if (!database.Exists) return new DatabaseStats(0, 0, 0);
         await using var connection = await database.OpenExistingAsync(cancellationToken) ?? throw new InvalidOperationException();
         await using var command = connection.CreateCommand();
-        command.CommandText = "SELECT (SELECT count(*) FROM snippets WHERE deleted_at IS NULL),(SELECT count(*) FROM tags);";
+        command.CommandText = "SELECT (SELECT count(*) FROM snippets WHERE deleted_at IS NULL),(SELECT count(DISTINCT st.tag_id) FROM snippet_tags st JOIN snippets s ON s.id=st.snippet_id WHERE s.deleted_at IS NULL);";
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         await reader.ReadAsync(cancellationToken);
         var size = new FileInfo(paths.DatabasePath).Length;

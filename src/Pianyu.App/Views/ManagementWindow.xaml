@@ -10,7 +10,25 @@
                 <TextBlock Text="标签与片段管理" Style="{StaticResource PageTitle}" />
                 <TextBlock Text="筛选、批量整理和清理本地片段。" Style="{StaticResource MutedText}" />
             </StackPanel>
-            <TextBox Grid.Column="1" Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" TextChanged="Filter_OnChanged" AutomationProperties.Name="筛选片段" />
+            <Grid Grid.Column="1">
+                <TextBox x:Name="ManagementSearchBox" Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" TextChanged="Filter_OnChanged" ToolTip="筛选标题、正文或标签" AutomationProperties.Name="筛选标题、正文或标签" />
+                <TextBlock Text="筛选标题、正文或标签…" Foreground="{DynamicResource TextMutedBrush}" Margin="12,0,12,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding Text, ElementName=ManagementSearchBox}" Value="" />
+                                        <Condition Binding="{Binding IsKeyboardFocusWithin, ElementName=ManagementSearchBox}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </Grid>
         </Grid>
         <Grid Grid.Row="1" Margin="0,18,0,14">
             <Grid.ColumnDefinitions><ColumnDefinition Width="230" /><ColumnDefinition Width="12" /><ColumnDefinition /></Grid.ColumnDefinitions>

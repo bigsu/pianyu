@@ -260,10 +260,12 @@ public sealed class SnippetRepository(DatabaseService database)
         if (connection is null) return [];
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT t.name,count(s.id) FROM tags t
-            LEFT JOIN snippet_tags st ON st.tag_id=t.id
-            LEFT JOIN snippets s ON s.id=st.snippet_id AND s.deleted_at IS NULL
-            GROUP BY t.id,t.name ORDER BY t.name COLLATE NOCASE;
+            SELECT t.name,count(DISTINCT s.id) FROM tags t
+            JOIN snippet_tags st ON st.tag_id=t.id
+            JOIN snippets s ON s.id=st.snippet_id AND s.deleted_at IS NULL
+            GROUP BY t.id,t.name
+            HAVING count(DISTINCT s.id) > 0
+            ORDER BY t.name COLLATE NOCASE;
             """;
         var result = new List<TagInfo>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
