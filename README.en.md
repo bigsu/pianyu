@@ -26,7 +26,7 @@ Download the latest `pianyu.exe` from [Releases](https://github.com/bigsu/pianyu
 - Pinyin initials, typo tolerance, common abbreviations, and learned personal aliases.
 - Dynamic ranking using relevance, recency, copy count, favorites, pins, and foreground-app context.
 - Parameterized templates such as `{port=3001}` with recent values.
-- `Enter` to copy and close, `Shift+Enter` to paste directly, and `Ctrl+Enter` to copy while keeping the panel open.
+- `Space` to copy and close, `Enter` to copy while keeping the panel open, and `Shift+Enter` to paste directly.
 - Explicit clipboard capture and time-limited monitoring; candidates are never saved without confirmation.
 - Configurable shortcuts with conflict detection and restore-default support.
 - Dark, light, and system-following themes.
@@ -39,9 +39,9 @@ Download the latest `pianyu.exe` from [Releases](https://github.com/bigsu/pianyu
 | --- | --- |
 | Show/hide Pianyu | `Ctrl+Alt+Space` |
 | Save current clipboard | `Ctrl+Alt+S` |
-| Copy and close | `Enter` |
+| Copy and close | `Space` |
 | Paste directly | `Shift+Enter` |
-| Copy and keep open | `Ctrl+Enter` |
+| Copy and keep open | `Enter` |
 | New snippet | `Ctrl+N` |
 | Edit snippet | `Ctrl+E` |
 | Delete snippet | `Delete` |
