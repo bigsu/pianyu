@@ -58,7 +58,7 @@ public sealed class RepositoryTests
     }
 
     [TestMethod]
-    public async Task CrudFtsTagsDuplicateAndUndo_WorkTogether()
+    public async Task CrudFtsTagsDuplicateAndPermanentDelete_WorkTogether()
     {
         var saved = await _repository.SaveAsync(new Snippet { Title = "启动后端", Content = "pnpm backend dev", Tags = ["命令", "开发"] });
         Assert.IsFalse(saved.IsDuplicate);
@@ -79,8 +79,8 @@ public sealed class RepositoryTests
 
         await _repository.DeleteAsync(id);
         Assert.IsFalse((await _repository.SearchAsync("test")).Any());
-        Assert.IsTrue(await _repository.UndoDeleteAsync(id));
-        Assert.IsTrue((await _repository.SearchAsync("test")).Any(item => item.Id == id));
+        Assert.IsFalse(await _repository.UndoDeleteAsync(id));
+        Assert.IsFalse((await _repository.GetAllAsync(includeDeleted: true)).Any(item => item.Id == id));
     }
 
     [TestMethod]

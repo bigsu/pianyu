@@ -19,7 +19,6 @@ public sealed class MainViewModel : ObservableObject
     private bool _isBusy;
     private string _statusMessage = string.Empty;
     private bool _isStatusError;
-    private long? _lastDeletedId;
     private AppSettings _settings = new();
 
     public MainViewModel(SnippetRepository repository, RankingService ranking, ForegroundAppService foreground, ITextAssistant modelAssistant, ModelConfigurationStore modelStore)
@@ -30,14 +29,12 @@ public sealed class MainViewModel : ObservableObject
         _modelAssistant = modelAssistant;
         _modelStore = modelStore;
         DeleteCommand = new AsyncRelayCommand(DeleteSelectedAsync, () => SelectedSnippet is not null);
-        UndoDeleteCommand = new AsyncRelayCommand(UndoDeleteAsync, () => _lastDeletedId.HasValue);
         ToggleFavoriteCommand = new AsyncRelayCommand(ToggleFavoriteAsync, () => SelectedSnippet is not null);
         TogglePinCommand = new AsyncRelayCommand(TogglePinAsync, () => SelectedSnippet is not null);
     }
 
     public ObservableCollection<Snippet> Results { get; } = [];
     public AsyncRelayCommand DeleteCommand { get; }
-    public AsyncRelayCommand UndoDeleteCommand { get; }
     public AsyncRelayCommand ToggleFavoriteCommand { get; }
     public AsyncRelayCommand TogglePinCommand { get; }
 
@@ -184,20 +181,8 @@ public sealed class MainViewModel : ObservableObject
     private async Task DeleteSelectedAsync()
     {
         if (SelectedSnippet is null) return;
-        _lastDeletedId = SelectedSnippet.Id;
         await _repository.DeleteAsync(SelectedSnippet.Id);
-        UndoDeleteCommand.RaiseCanExecuteChanged();
-        ShowStatus($"已删除“{SelectedSnippet.Title}” · Ctrl+Z 撤销");
-        await SearchAsync();
-    }
-
-    private async Task UndoDeleteAsync()
-    {
-        if (!_lastDeletedId.HasValue) return;
-        await _repository.UndoDeleteAsync(_lastDeletedId.Value);
-        _lastDeletedId = null;
-        UndoDeleteCommand.RaiseCanExecuteChanged();
-        ShowStatus("已撤销删除");
+        ShowStatus($"已永久删除“{SelectedSnippet.Title}”");
         await SearchAsync();
     }
 

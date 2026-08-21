@@ -159,21 +159,27 @@ public sealed class SnippetRepository(DatabaseService database)
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
         await using var connection = await database.OpenWritableAsync(cancellationToken);
-        await using var command = connection.CreateCommand();
-        command.CommandText = "UPDATE snippets SET deleted_at=$now, updated_at=$now WHERE id=$id AND deleted_at IS NULL;";
-        command.Parameters.AddWithValue("$id", id);
-        command.Parameters.AddWithValue("$now", DateTimeOffset.Now.ToString("O"));
-        await command.ExecuteNonQueryAsync(cancellationToken);
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+        await using (var command = connection.CreateCommand())
+        {
+            command.Transaction = (SqliteTransaction)transaction;
+            command.CommandText = "DELETE FROM snippets WHERE id=$id;";
+            command.Parameters.AddWithValue("$id", id);
+            await command.ExecuteNonQueryAsync(cancellationToken);
+        }
+        await using (var cleanup = connection.CreateCommand())
+        {
+            cleanup.Transaction = (SqliteTransaction)transaction;
+            cleanup.CommandText = "DELETE FROM tags WHERE id NOT IN (SELECT DISTINCT tag_id FROM snippet_tags);";
+            await cleanup.ExecuteNonQueryAsync(cancellationToken);
+        }
+        await transaction.CommitAsync(cancellationToken);
     }
 
     public async Task<bool> UndoDeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        await using var connection = await database.OpenWritableAsync(cancellationToken);
-        await using var command = connection.CreateCommand();
-        command.CommandText = "UPDATE snippets SET deleted_at=NULL, updated_at=$now WHERE id=$id AND deleted_at IS NOT NULL;";
-        command.Parameters.AddWithValue("$id", id);
-        command.Parameters.AddWithValue("$now", DateTimeOffset.Now.ToString("O"));
-        return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
+        await Task.CompletedTask;
+        return false;
     }
 
     public async Task PermanentlyDeleteAsync(IEnumerable<long> ids, CancellationToken cancellationToken = default)
@@ -187,6 +193,12 @@ public sealed class SnippetRepository(DatabaseService database)
             command.CommandText = "DELETE FROM snippets WHERE id=$id;";
             command.Parameters.AddWithValue("$id", id);
             await command.ExecuteNonQueryAsync(cancellationToken);
+        }
+        await using (var cleanup = connection.CreateCommand())
+        {
+            cleanup.Transaction = (SqliteTransaction)transaction;
+            cleanup.CommandText = "DELETE FROM tags WHERE id NOT IN (SELECT DISTINCT tag_id FROM snippet_tags);";
+            await cleanup.ExecuteNonQueryAsync(cancellationToken);
         }
         await transaction.CommitAsync(cancellationToken);
     }

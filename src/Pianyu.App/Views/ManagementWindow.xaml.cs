@@ -83,7 +83,7 @@ public partial class ManagementWindow : Window
         var ids = _viewModel.SelectedIds;
         if (ids.Count == 0) { _viewModel.Message = "请先勾选片段。"; return; }
         foreach (var id in ids) await _services.Repository.DeleteAsync(id);
-        _viewModel.Message = $"已将 {ids.Count} 条片段移入可撤销删除状态。";
+        _viewModel.Message = $"已永久删除 {ids.Count} 条片段。";
         await ReloadAsync();
     }
 

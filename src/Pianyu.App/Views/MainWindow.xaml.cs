@@ -126,7 +126,6 @@ public partial class MainWindow : Window
             case "new": OpenEditor(null); e.Handled = true; return;
             case "search": SearchBox.Focus(); SearchBox.SelectAll(); e.Handled = true; return;
             case "edit" when !SearchBox.IsKeyboardFocused: OpenEditor(_viewModel.SelectedSnippet); e.Handled = true; return;
-            case "undo": _viewModel.UndoDeleteCommand.Execute(null); e.Handled = true; return;
             case "delete" when _viewModel.SelectedSnippet is not null && !SearchBox.IsKeyboardFocused: _viewModel.DeleteCommand.Execute(null); e.Handled = true; return;
             case "copy_close" when _viewModel.SelectedSnippet is not null: _ = CopySelectedAsync(true, false); e.Handled = true; return;
             case "paste" when _viewModel.SelectedSnippet is not null: _ = CopySelectedAsync(false, true); e.Handled = true; return;

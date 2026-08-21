@@ -26,7 +26,6 @@ public sealed class ShortcutService : IDisposable
         new("copy_keep", "复制并保持打开", "Enter", "Enter", ShortcutScope.Local),
         new("edit", "编辑片段", "E", "E", ShortcutScope.Local),
         new("delete", "删除片段", "Del", "Del", ShortcutScope.Local),
-        new("undo", "撤销删除", "Ctrl+Z", "Ctrl+Z", ShortcutScope.Local)
     ];
 
     public void Attach(nint windowHandle)

@@ -1,4 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Data.Sqlite;
+using Pianyu.App.Data;
 using Pianyu.App.Services;
 using Pianyu.Core;
 
@@ -75,5 +77,37 @@ public sealed class TextFeatureTests
     public void DirectPaste_UsesWin64InputStructureLayout()
     {
         Assert.AreEqual(40, DirectPasteService.NativeInputStructureSize);
+    }
+
+    [TestMethod]
+    public async Task SaveAsync_ReusesContentAfterPermanentDeleteWithoutHashConflict()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), $"pianyu-regression-{Guid.NewGuid():N}");
+        try
+        {
+            var repository = new SnippetRepository(new DatabaseService(new AppPaths(directory)));
+            var original = new Snippet { Title = "原始片段", Content = "相同正文用于唯一 hash 回归测试" };
+            var created = await repository.SaveAsync(original);
+            Assert.IsFalse(created.IsDuplicate);
+
+            await repository.DeleteAsync(original.Id);
+
+            var restored = await repository.SaveAsync(new Snippet { Title = "重新录入", Content = original.Content });
+            Assert.IsFalse(restored.IsDuplicate);
+            Assert.AreNotEqual(original.Id, restored.Snippet!.Id);
+            Assert.AreEqual(1, (await repository.GetAllAsync()).Count);
+        }
+        finally
+        {
+            SqliteConnection.ClearAllPools();
+            if (Directory.Exists(directory))
+            {
+                for (var attempt = 0; attempt < 5; attempt++)
+                {
+                    try { Directory.Delete(directory, recursive: true); break; }
+                    catch (IOException) when (attempt < 4) { Thread.Sleep(50); }
+                }
+            }
+        }
     }
 }

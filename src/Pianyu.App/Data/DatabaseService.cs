@@ -4,7 +4,7 @@ namespace Pianyu.App.Data;
 
 public sealed class DatabaseService(AppPaths paths)
 {
-    private const int CurrentSchemaVersion = 1;
+    private const int CurrentSchemaVersion = 2;
     private readonly SemaphoreSlim _migrationLock = new(1, 1);
 
     public string DatabasePath => paths.DatabasePath;
@@ -13,6 +13,7 @@ public sealed class DatabaseService(AppPaths paths)
     public async Task<SqliteConnection?> OpenExistingAsync(CancellationToken cancellationToken = default)
     {
         if (!Exists) return null;
+        await EnsureInitializedAsync(cancellationToken);
         var connection = CreateConnection();
         await connection.OpenAsync(cancellationToken);
         await ConfigureAsync(connection, cancellationToken);
@@ -45,10 +46,8 @@ public sealed class DatabaseService(AppPaths paths)
                 throw new InvalidOperationException($"数据库版本 {version} 高于当前程序支持的版本 {CurrentSchemaVersion}。");
             }
 
-            if (version < 1)
-            {
-                await ApplyVersion1Async(connection, cancellationToken);
-            }
+            if (version < 1) await ApplyVersion1Async(connection, cancellationToken);
+            if (version < 2) await ApplyVersion2Async(connection, cancellationToken);
         }
         finally
         {
@@ -178,6 +177,20 @@ public sealed class DatabaseService(AppPaths paths)
             END;
 
             INSERT INTO schema_info(version, migrated_at) VALUES (1, strftime('%Y-%m-%dT%H:%M:%fZ','now'));
+            """;
+        await command.ExecuteNonQueryAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    private static async Task ApplyVersion2Async(SqliteConnection connection, CancellationToken cancellationToken)
+    {
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.Transaction = (SqliteTransaction)transaction;
+        command.CommandText = """
+            DELETE FROM snippets WHERE deleted_at IS NOT NULL;
+            DELETE FROM tags WHERE id NOT IN (SELECT DISTINCT tag_id FROM snippet_tags);
+            UPDATE schema_info SET version=2, migrated_at=strftime('%Y-%m-%dT%H:%M:%fZ','now');
             """;
         await command.ExecuteNonQueryAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
