@@ -90,6 +90,7 @@ public partial class QuickCaptureWindow : Window
 
     private async void Save_OnClick(object sender, RoutedEventArgs e)
     {
+        MessageText.Foreground = (System.Windows.Media.Brush)FindResource("DangerBrush");
         MessageText.Text = string.Empty;
         try
         {

@@ -1,4 +1,4 @@
-<p align="right"><a href="README.md">中文</a> · <a href="README.en.md">English</a></p>
+<p align="right"><a href="README.zh-CN.md">中文</a> · <a href="README.md">English</a></p>
 
 # Pianyu
 

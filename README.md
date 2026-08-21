@@ -1,65 +1,65 @@
-<p align="right"><a href="README.md">中文</a> · <a href="README.en.md">English</a></p>
+<p align="right"><a href="README.zh-CN.md">中文</a> · <a href="README.md">English</a></p>
 
-# 片语
+# Pianyu
 
 [![Build & Release](https://github.com/bigsu/pianyu/actions/workflows/release.yml/badge.svg)](https://github.com/bigsu/pianyu/actions/workflows/release.yml)
 [![Latest Release](https://img.shields.io/github/v/release/bigsu/pianyu?display_name=tag)](https://github.com/bigsu/pianyu/releases/latest)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-35d0b0)](#系统要求)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-35d0b0)](#requirements)
 
-本地优先、键盘优先的 Windows 文本片段管理工具，用于快速保存、搜索、复制和复用提示词、命令及流程文本。
+A local-first, keyboard-first Windows text snippet manager for saving, searching, copying, and reusing prompts, commands, and workflow text.
 
-![片语主命令面板](docs/images/pianyu-main.png)
+![Pianyu command panel](docs/images/pianyu-main.png)
 
-## 下载与使用
+## Download and run
 
-从 [Releases](https://github.com/bigsu/pianyu/releases/latest) 下载最新的 `pianyu.exe`，放到可写目录后直接运行。
+Download the latest `pianyu.exe` from [Releases](https://github.com/bigsu/pianyu/releases/latest), place it in a writable folder, and run it.
 
-- 单文件、自包含，目标电脑无需安装 .NET 或 SQLite。
-- 第一次保存数据时，会在 EXE 同目录创建 `pianyu.db`。
-- 升级时替换 EXE 即可，保留原来的 `pianyu.db`。
-- Windows SmartScreen 可能提示“未知发布者”，因为当前构建未进行商业代码签名。
+- The executable is self-contained and includes its .NET and SQLite runtime dependencies.
+- `pianyu.db` is created beside the executable on the first write.
+- To upgrade, replace the executable and keep the existing `pianyu.db`.
+- Windows SmartScreen may show an “Unknown publisher” warning because current builds are not commercially code-signed.
 
-## 核心功能
+## Highlights
 
-- 新建、编辑、收藏、置顶、标签、软删除与撤销删除。
-- SQLite FTS5 全文搜索，覆盖标题、正文和标签。
-- 拼音首字母、轻微输错、常见缩写和个人搜索别名。
-- 综合相关度、近期使用、复制次数、收藏、置顶和当前应用的动态排序。
-- `{port=3001}` 形式的参数化模板与最近变量值。
-- `空格` 复制并关闭、`Enter` 复制并保持打开、`Shift+Enter` 直接粘贴。
-- 手动读取剪贴板，或主动开启限时监听；候选内容始终需要确认才会保存。
-- 所有快捷键均可录制、清除和恢复，冲突时保留原快捷键。
-- 深色、浅色、跟随系统三种主题。
-- JSON 导入导出、SQLite 备份与恢复。
-- 可选的大模型辅助层；模型离线、超时或未配置时，本地功能仍正常工作。
+- Create, edit, favorite, pin, tag, soft-delete, and undo deletion.
+- SQLite FTS5 search across titles, content, and tags.
+- Pinyin initials, typo tolerance, common abbreviations, and learned personal aliases.
+- Dynamic ranking using relevance, recency, copy count, favorites, pins, and foreground-app context.
+- Parameterized templates such as `{port=3001}` with recent values.
+- `Space` to copy and close, `Enter` to copy while keeping the panel open, and `Shift+Enter` to paste directly.
+- Explicit clipboard capture and time-limited monitoring; candidates are never saved without confirmation.
+- Configurable shortcuts with conflict detection and restore-default support.
+- Dark, light, and system-following themes.
+- JSON import/export and SQLite backup/restore.
+- Optional LLM assistance that never blocks local search, save, copy, paste, or ranking.
 
-## 默认快捷键
+## Default shortcuts
 
-| 动作 | 快捷键 |
+| Action | Shortcut |
 | --- | --- |
-| 显示/隐藏片语 | `Ctrl+Alt+Space` |
-| 保存当前剪贴板 | `Ctrl+Alt+S` |
-| 复制并关闭 | `空格` |
-| 直接粘贴 | `Shift+Enter` |
-| 复制并保持打开 | `Enter` |
-| 新建片段 | `Ctrl+N` |
-| 编辑片段 | `Ctrl+E` |
-| 删除片段 | `Delete` |
-| 撤销删除 | `Ctrl+Z` |
+| Show/hide Pianyu | `Ctrl+Alt+Space` |
+| Save current clipboard | `Ctrl+Alt+S` |
+| Copy and close | `Space` |
+| Paste directly | `Shift+Enter` |
+| Copy and keep open | `Enter` |
+| New snippet | `Ctrl+N` |
+| Edit snippet | `Ctrl+E` |
+| Delete snippet | `Delete` |
+| Undo deletion | `Ctrl+Z` |
 
-所有快捷键均可在“设置 → 快捷键”中修改。
+All shortcuts can be changed in **Settings → Shortcuts**.
 
-## 隐私与数据
+## Privacy and data
 
-- 无账号、无遥测、无云同步。
-- 片段、标签、快捷键和设置均保存在本地 `pianyu.db`。
-- 默认不监听剪贴板，不会未经确认自动收录内容。
-- 模型功能完全可选；API Key 使用 Windows DPAPI 按当前用户加密。
-- 仓库和 GitHub Release 不包含用户数据库、API Key 或个人片段。
+- No account, telemetry, or cloud sync.
+- Snippets, tags, shortcuts, and settings remain in the local `pianyu.db`.
+- Clipboard monitoring is off by default, and clipboard content is never auto-saved.
+- LLM integration is optional; API keys are protected with Windows DPAPI for the current user.
+- The repository and GitHub Releases contain no user database, API key, or personal snippets.
 
-## 构建与测试
+## Build and test
 
-需要 Windows 10/11 和 .NET 8 SDK：
+Building requires Windows 10/11 and the .NET 8 SDK:
 
 ```powershell
 dotnet restore Pianyu.sln
@@ -71,23 +71,23 @@ dotnet publish src/Pianyu.App/Pianyu.App.csproj `
   -o artifacts/release
 ```
 
-## 工程结构
+## Project layout
 
 ```text
-src/Pianyu.Core     领域模型、搜索、排序和模板算法
-src/Pianyu.App      WPF 界面、SQLite 仓储、Windows 服务和模型适配器
-tests/Pianyu.Tests  单元测试、集成测试和失败回退测试
-.github/workflows   Windows 构建、测试和自动发布
+src/Pianyu.Core     Domain models, search, ranking, and template algorithms
+src/Pianyu.App      WPF UI, SQLite repository, Windows services, and model adapter
+tests/Pianyu.Tests  Unit, integration, and fallback tests
+.github/workflows    Windows build, test, and release automation
 ```
 
-## 系统要求
+## Requirements
 
-- Windows 10 版本 2004 或更高版本，或 Windows 11
-- x64 处理器
-- Release 版本无需单独安装 .NET 或 SQLite
+- Windows 10 version 2004 or later, or Windows 11
+- x64 processor
+- Release builds require no separate .NET or SQLite installation
 
-## 发布与安全
+## Releases and security
 
-推送标签（例如 `v1.0.0`）会通过 GitHub Actions 构建、测试并发布自包含单文件 `片语.exe`。
+Pushing a tag such as `v1.0.0` runs GitHub Actions to build, test, and publish the self-contained single-file `片语.exe`.
 
-请不要提交 `pianyu.db`、导出的片段数据、API Key 或其他个人内容。项目的 `.gitignore` 已排除常见本地数据和密钥文件。
+Please do not commit `pianyu.db`, exported snippet data, API keys, or other personal content. The repository `.gitignore` excludes common local-data and secret files.
