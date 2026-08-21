@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:infra="clr-namespace:Pianyu.App.Infrastructure"
         Title="{Binding WindowTitle}" Width="980" Height="740" MinWidth="760" MinHeight="580" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" AllowsTransparency="False" KeyDown="Window_OnKeyDown" Style="{StaticResource AppWindowStyle}">
-    <Window.Resources><infra:BoolToVisibilityConverter x:Key="BoolVisible" /></Window.Resources>
+    <Window.Resources><infra:BoolToVisibilityConverter x:Key="BoolVisible" /><infra:InverseBoolToVisibilityConverter x:Key="BoolCollapsed" /></Window.Resources>
     <Grid Margin="24">
         <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="12" /><ColumnDefinition Width="270" /></Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
@@ -53,8 +53,8 @@
             <Grid>
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
                 <StackPanel>
-                    <TextBlock Text="模型辅助" Style="{StaticResource SectionTitle}" />
-                    <TextBlock Text="只生成建议；离线或失败不影响保存。" Style="{StaticResource MutedText}" />
+                    <TextBlock Text="模型辅助（点击生成）" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="点击上方功能生成建议；下方选择后再采用，原文不会自动覆盖。" Style="{StaticResource MutedText}" />
                 </StackPanel>
                 <WrapPanel Grid.Row="1" Margin="0,14,0,10">
                     <Button Content="生成标题" Click="SuggestTitle_OnClick" Padding="9,5" Margin="0,0,5,5" />
@@ -64,10 +64,16 @@
                     <Button Content="合并建议" Click="SuggestMerge_OnClick" Padding="9,5" Margin="0,0,5,5" />
                     <Button Content="识别变量" Click="SuggestVariables_OnClick" Padding="9,5" Margin="0,0,5,5" />
                 </WrapPanel>
-                <ListBox Grid.Row="2" ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}">
-                    <ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Kind}" Foreground="{DynamicResource AccentBrush}" FontSize="10" /><TextBlock Text="{Binding Value}" FontSize="12" Margin="0,4,0,0" /></StackPanel></DataTemplate></ListBox.ItemTemplate>
-                </ListBox>
-                <Button Grid.Row="3" Content="采用选中建议" Click="ApplySuggestion_OnClick" Margin="0,10,0,0" />
+                <Grid Grid.Row="2">
+                    <ListBox ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}">
+                        <ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Kind}" Foreground="{DynamicResource AccentBrush}" FontSize="10" /><TextBlock Text="{Binding Value}" FontSize="12" Margin="0,4,0,0" /></StackPanel></DataTemplate></ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding HasSuggestions, Converter={StaticResource BoolCollapsed}}">
+                        <TextBlock Text="尚未生成建议" HorizontalAlignment="Center" FontWeight="SemiBold" />
+                        <TextBlock Text="点击上方按钮开始生成" Style="{StaticResource MutedText}" Margin="0,6,0,0" />
+                    </StackPanel>
+                </Grid>
+                <Button Grid.Row="3" Content="采用选中建议" IsEnabled="{Binding HasSuggestions}" Click="ApplySuggestion_OnClick" Margin="0,10,0,0" />
             </Grid>
         </Border>
     </Grid>

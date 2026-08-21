@@ -15,6 +15,8 @@ public sealed class SnippetEditorViewModel : ObservableObject
     private string _message = string.Empty;
     private ModelSuggestion? _selectedSuggestion;
 
+    public SnippetEditorViewModel() => Suggestions.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasSuggestions));
+
     public long Id { get; init; }
     public bool IsEditing => Id > 0;
     public string WindowTitle => IsEditing ? "编辑片段" : "新建片段";
@@ -27,6 +29,7 @@ public sealed class SnippetEditorViewModel : ObservableObject
     public string Message { get => _message; set { SetProperty(ref _message, value); OnPropertyChanged(nameof(HasMessage)); } }
     public bool HasMessage => !string.IsNullOrWhiteSpace(Message);
     public ObservableCollection<ModelSuggestion> Suggestions { get; } = [];
+    public bool HasSuggestions => Suggestions.Count > 0;
     public ModelSuggestion? SelectedSuggestion { get => _selectedSuggestion; set => SetProperty(ref _selectedSuggestion, value); }
 
     public Snippet ToSnippet() => new()

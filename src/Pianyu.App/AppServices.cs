@@ -2,6 +2,7 @@ using Pianyu.App.Data;
 using Pianyu.App.Services;
 using Pianyu.Core;
 using System.Net.Http;
+using System.Security.Authentication;
 
 namespace Pianyu.App;
 
@@ -23,7 +24,11 @@ public sealed class AppServices : IDisposable
         ModelConfigurationStore = new ModelConfigurationStore(Repository, SecretProtector);
         Startup = new StartupService();
         Theme = new ThemeService();
-        HttpClient = new HttpClient();
+        // The Ark gateway requests a TLS renegotiation during the handshake.
+        // Pinning the Windows client to TLS 1.2 avoids the .NET EOF failure
+        // while keeping normal certificate validation enabled.
+        var httpHandler = new HttpClientHandler { SslProtocols = SslProtocols.Tls12 };
+        HttpClient = new HttpClient(httpHandler) { Timeout = Timeout.InfiniteTimeSpan };
         ModelAssistant = new ModelAssistantService(HttpClient);
     }
 

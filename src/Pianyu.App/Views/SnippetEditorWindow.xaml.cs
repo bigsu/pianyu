@@ -69,6 +69,8 @@ public partial class SnippetEditorWindow : Window
     private async Task SuggestAsync(string feature)
     {
         _viewModel.Message = string.Empty;
+        _viewModel.Suggestions.Clear();
+        _viewModel.SelectedSuggestion = null;
         _viewModel.IsBusy = true;
         try
         {
@@ -80,7 +82,6 @@ public partial class SnippetEditorWindow : Window
             }
             using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(stored.Settings.ModelTimeoutSeconds + 2));
             var suggestions = await _services.ModelAssistant.SuggestAsync(feature, _viewModel.Content, ModelConfigurationStore.ToConfiguration(stored.Settings, stored.ApiKey), cancellation.Token);
-            _viewModel.Suggestions.Clear();
             foreach (var suggestion in suggestions) _viewModel.Suggestions.Add(suggestion);
             _viewModel.SelectedSuggestion = _viewModel.Suggestions.FirstOrDefault();
             if (suggestions.Count == 0) _viewModel.Message = _services.ModelAssistant.IsTemporarilyPaused ? "模型连续失败，已暂停自动请求 1 分钟。" : "模型暂时不可用；本地功能不受影响。";
