@@ -63,7 +63,7 @@
 
         <Grid Grid.Row="2" Margin="16,0,16,0">
             <ListBox x:Name="ResultList" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedSnippet}" SelectionMode="Single"
-                     ItemContainerStyle="{StaticResource CompactSnippetItem}" MouseDoubleClick="ResultList_OnMouseDoubleClick"
+                     ItemContainerStyle="{StaticResource CompactSnippetItem}" PreviewMouseLeftButtonUp="ResultList_OnPreviewMouseLeftButtonUp" MouseDoubleClick="ResultList_OnMouseDoubleClick"
                      Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

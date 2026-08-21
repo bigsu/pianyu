@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Data.Sqlite;
 using Pianyu.App.Data;
 using Pianyu.App.Services;
+using Pianyu.App.Views;
 using Pianyu.Core;
 
 namespace Pianyu.Tests;
@@ -109,5 +110,20 @@ public sealed class TextFeatureTests
                 }
             }
         }
+    }
+
+    [TestMethod]
+    public void SnippetDetail_ExplodesBodyIntoCopyableBlocks()
+    {
+        var detail = new SnippetDetailViewModel(new Snippet
+        {
+            Title = "分段测试",
+            Content = "第一段\n\n第二段\n---\n# 第三段"
+        });
+
+        Assert.AreEqual(3, detail.Blocks.Count);
+        Assert.AreEqual("第一段", detail.Blocks[0].Text);
+        Assert.AreEqual("第二段", detail.Blocks[1].Text);
+        Assert.AreEqual("# 第三段", detail.Blocks[2].Text);
     }
 }

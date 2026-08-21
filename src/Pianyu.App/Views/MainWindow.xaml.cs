@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using Pianyu.App.ViewModels;
 using Pianyu.App.Services;
@@ -175,7 +176,36 @@ public partial class MainWindow : Window
     }
     private void ActionButton_OnPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e) => e.Handled = true;
     private void Clipboard_OnClick(object sender, RoutedEventArgs e) => OpenClipboardCapture();
-    private void ResultList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e) => _ = CopySelectedAsync(_viewModel.Settings.CloseAfterCopy, false);
+    private void ResultList_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        var source = e.OriginalSource as DependencyObject;
+        if (FindVisualParent<Button>(source) is not null) return;
+        if (FindVisualParent<ListBoxItem>(source)?.DataContext is not Snippet snippet) return;
+        _viewModel.SelectedSnippet = snippet;
+        _ = CopySnippetAsync(snippet, false, false);
+    }
+
+    private void ResultList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        var source = e.OriginalSource as DependencyObject;
+        if (FindVisualParent<Button>(source) is not null) return;
+        if (FindVisualParent<ListBoxItem>(source)?.DataContext is Snippet snippet)
+        {
+            var window = new SnippetDetailWindow(_services, snippet) { Owner = this };
+            window.ShowDialog();
+        }
+        e.Handled = true;
+    }
+
+    private static T? FindVisualParent<T>(DependencyObject? element) where T : DependencyObject
+    {
+        while (element is not null)
+        {
+            if (element is T match) return match;
+            element = VisualTreeHelper.GetParent(element);
+        }
+        return null;
+    }
     private void Settings_OnClick(object sender, RoutedEventArgs e) { var window = new SettingsWindow(_services) { Owner = this }; window.ShowDialog(); _ = _viewModel.InitializeAsync(); }
     private void Manage_OnClick(object sender, RoutedEventArgs e) { var window = new ManagementWindow(_services) { Owner = this }; window.ShowDialog(); _ = _viewModel.SearchAsync(); }
 }
