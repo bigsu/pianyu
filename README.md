@@ -16,7 +16,7 @@
 
 ### 下载与使用
 
-从 [Releases](https://github.com/bigsu/pianyu/releases/latest) 下载最新的 `片语.exe`，放到一个可写目录后直接运行。
+从 [Releases](https://github.com/bigsu/pianyu/releases/latest) 下载最新的 `pianyu.exe`，放到一个可写目录后直接运行。程序窗口名称仍为“片语”。
 
 - 单文件、自包含，目标电脑无需安装 .NET 或 SQLite。
 - 第一次保存数据时，会在 EXE 同目录创建 `pianyu.db`。
@@ -88,7 +88,7 @@ tests/Pianyu.Tests  单元测试、集成测试、失败回退和性能测试
 
 ### Download and run
 
-Download the latest `片语.exe` from [Releases](https://github.com/bigsu/pianyu/releases/latest), place it in a writable folder, and run it.
+Download the latest `pianyu.exe` from [Releases](https://github.com/bigsu/pianyu/releases/latest), place it in a writable folder, and run it. The application window is still named “片语”.
 
 - The executable is self-contained and includes its .NET and SQLite runtime dependencies.
 - `pianyu.db` is created beside the executable on the first write.

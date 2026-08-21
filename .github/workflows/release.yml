@@ -72,11 +72,15 @@ jobs:
           -p:DebugSymbols=false
           -o artifacts/release
 
+      - name: Normalize release filename
+        shell: pwsh
+        run: Copy-Item "artifacts/release/片语.exe" "artifacts/release/pianyu.exe"
+
       - name: Upload executable artifact
         uses: actions/upload-artifact@v4
         with:
           name: pianyu-win-x64
-          path: artifacts/release/片语.exe
+          path: artifacts/release/pianyu.exe
           if-no-files-found: error
 
       - name: Create GitHub Release
@@ -86,6 +90,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh release create "$env:GITHUB_REF_NAME"
-          "artifacts/release/片语.exe"
+          "artifacts/release/pianyu.exe"
           --title "片语 $env:GITHUB_REF_NAME"
           --generate-notes
