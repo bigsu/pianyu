@@ -66,6 +66,9 @@ public sealed class TextFeatureTests
         StringAssert.Contains(conflict, "聚焦搜索");
         Assert.IsTrue(ShortcutService.GestureMatches("Enter", "Return"));
         Assert.IsTrue(ShortcutService.GestureMatches("Esc", "Escape"));
+        Assert.IsTrue(ShortcutService.TryParseGesture("Del", out _, out var deleteKey, out _));
+        Assert.AreEqual(System.Windows.Input.Key.Delete, deleteKey);
+        Assert.IsTrue(ShortcutService.GestureMatches("Del", "Delete"));
     }
 
     [TestMethod]

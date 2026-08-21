@@ -23,9 +23,9 @@ public sealed class ShortcutService : IDisposable
         new("search", "聚焦搜索", "Ctrl+F", "Ctrl+F", ShortcutScope.Local),
         new("copy_close", "复制并关闭", "Enter", "Enter", ShortcutScope.Local),
         new("paste", "直接粘贴", "Shift+Enter", "Shift+Enter", ShortcutScope.Local),
-        new("copy_keep", "复制并保持打开", "Ctrl+Enter", "Ctrl+Enter", ShortcutScope.Local),
-        new("edit", "编辑片段", "Ctrl+E", "Ctrl+E", ShortcutScope.Local),
-        new("delete", "删除片段", "Delete", "Delete", ShortcutScope.Local),
+        new("copy_keep", "复制并保持打开", "Space", "Space", ShortcutScope.Local),
+        new("edit", "编辑片段", "E", "E", ShortcutScope.Local),
+        new("delete", "删除片段", "Del", "Del", ShortcutScope.Local),
         new("undo", "撤销删除", "Ctrl+Z", "Ctrl+Z", ShortcutScope.Local)
     ];
 
@@ -83,6 +83,7 @@ public sealed class ShortcutService : IDisposable
                 case "alt": modifiers |= HotKeyModifiers.Alt; break;
                 case "shift": modifiers |= HotKeyModifiers.Shift; break;
                 case "win" or "windows": modifiers |= HotKeyModifiers.Windows; break;
+                case "del": key = Key.Delete; break;
                 default:
                     if (Enum.TryParse<Key>(part, true, out var parsed)) key = parsed;
                     else
@@ -134,6 +135,7 @@ public sealed class ShortcutService : IDisposable
         .Replace("Control", "Ctrl", StringComparison.OrdinalIgnoreCase)
         .Replace("Escape", "Esc", StringComparison.OrdinalIgnoreCase)
         .Replace("Return", "Enter", StringComparison.OrdinalIgnoreCase)
+        .Replace("Delete", "Del", StringComparison.OrdinalIgnoreCase)
         .Replace(" ", string.Empty)
         .ToLowerInvariant();
 
