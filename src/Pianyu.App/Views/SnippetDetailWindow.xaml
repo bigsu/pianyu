@@ -1,27 +1,10 @@
 <Window x:Class="Pianyu.App.Views.SnippetDetailWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:infra="clr-namespace:Pianyu.App.Infrastructure"
+        xmlns:views="clr-namespace:Pianyu.App.Views"
         Title="片段详情" Width="760" Height="620" MinWidth="620" MinHeight="460"
         WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" AllowsTransparency="False"
         ResizeMode="CanResizeWithGrip" PreviewKeyDown="Window_OnPreviewKeyDown" Style="{StaticResource AppWindowStyle}">
-    <Window.Resources>
-        <infra:BoolToVisibilityConverter x:Key="BoolVisible" />
-        <Style x:Key="ExplodedBlock" TargetType="Border">
-            <Setter Property="Background" Value="{DynamicResource RaisedBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Padding" Value="12" />
-            <Setter Property="Margin" Value="0,0,0,8" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentDarkBrush}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
     <Grid Margin="24">
         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
         <StackPanel>
@@ -37,19 +20,7 @@
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                 <TextBlock Text="{Binding SelectionSummary}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,10" />
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding Blocks}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Style="{StaticResource ExplodedBlock}" Cursor="Hand" MouseLeftButtonUp="Block_OnMouseLeftButtonUp" Tag="{Binding}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions><ColumnDefinition /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                        <TextBlock Text="{Binding Text}" FontFamily="Cascadia Mono, Consolas, Microsoft YaHei UI" FontSize="14" LineHeight="23" TextWrapping="Wrap" />
-                                        <TextBlock Grid.Column="1" Text="{Binding SelectionOrder, StringFormat=第{0}段}" Foreground="{DynamicResource AccentBrush}" FontSize="11" Margin="12,0,0,0" VerticalAlignment="Top" Visibility="{Binding IsSelected, Converter={StaticResource BoolVisible}}" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                    <views:ExplodedTextView Blocks="{Binding Blocks}" HorizontalAlignment="Stretch" />
                 </ScrollViewer>
             </Grid>
         </Border>

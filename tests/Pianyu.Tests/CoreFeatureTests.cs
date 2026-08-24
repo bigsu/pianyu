@@ -118,16 +118,18 @@ public sealed class TextFeatureTests
         var detail = new SnippetDetailViewModel(new Snippet
         {
             Title = "分段测试",
-            Content = "第一段\n\n第二段\n---\n# 第三段"
+            Content = "第一段,第二段，第三段"
         });
 
-        Assert.AreEqual(3, detail.Blocks.Count);
+        Assert.AreEqual(5, detail.Blocks.Count);
         Assert.AreEqual("第一段", detail.Blocks[0].Text);
-        Assert.AreEqual("第二段", detail.Blocks[1].Text);
-        Assert.AreEqual("# 第三段", detail.Blocks[2].Text);
+        Assert.AreEqual(",", detail.Blocks[1].Text);
+        Assert.AreEqual("第二段", detail.Blocks[2].Text);
+        Assert.AreEqual("，", detail.Blocks[3].Text);
+        Assert.AreEqual("第三段", detail.Blocks[4].Text);
 
-        detail.ToggleBlock(detail.Blocks[2]);
+        detail.ToggleBlock(detail.Blocks[4]);
         detail.ToggleBlock(detail.Blocks[0]);
-        Assert.AreEqual("# 第三段" + Environment.NewLine + Environment.NewLine + "第一段", detail.GetSelectedText());
+        Assert.AreEqual("第三段 第一段", detail.GetSelectedText());
     }
 }
