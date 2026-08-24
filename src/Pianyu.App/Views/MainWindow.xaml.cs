@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     private readonly MainViewModel _viewModel;
     private nint _pasteTarget;
     private bool _captureOpen;
+    private CancellationTokenSource? _pendingItemCopy;
 
     public MainWindow(AppServices services)
     {
@@ -176,25 +177,34 @@ public partial class MainWindow : Window
     }
     private void ActionButton_OnPreviewMouseDoubleClick(object sender, MouseButtonEventArgs e) => e.Handled = true;
     private void Clipboard_OnClick(object sender, RoutedEventArgs e) => OpenClipboardCapture();
-    private void ResultList_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private void ResultList_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         var source = e.OriginalSource as DependencyObject;
         if (FindVisualParent<Button>(source) is not null) return;
         if (FindVisualParent<ListBoxItem>(source)?.DataContext is not Snippet snippet) return;
         _viewModel.SelectedSnippet = snippet;
-        _ = CopySnippetAsync(snippet, false, false);
-    }
-
-    private void ResultList_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
-    {
-        var source = e.OriginalSource as DependencyObject;
-        if (FindVisualParent<Button>(source) is not null) return;
-        if (FindVisualParent<ListBoxItem>(source)?.DataContext is Snippet snippet)
+        if (e.ClickCount >= 2)
         {
+            _pendingItemCopy?.Cancel();
             var window = new SnippetDetailWindow(_services, snippet) { Owner = this };
             window.ShowDialog();
+            e.Handled = true;
+            return;
         }
-        e.Handled = true;
+
+        _pendingItemCopy?.Cancel();
+        _pendingItemCopy = new CancellationTokenSource();
+        _ = CopyAfterSingleClickAsync(snippet, _pendingItemCopy.Token);
+    }
+
+    private async Task CopyAfterSingleClickAsync(Snippet snippet, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay((int)NativeMethods.GetDoubleClickTime() + 40, cancellationToken);
+            await CopySnippetAsync(snippet, false, false);
+        }
+        catch (OperationCanceledException) { }
     }
 
     private static T? FindVisualParent<T>(DependencyObject? element) where T : DependencyObject
@@ -205,6 +215,12 @@ public partial class MainWindow : Window
             element = VisualTreeHelper.GetParent(element);
         }
         return null;
+    }
+
+    private static class NativeMethods
+    {
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        internal static extern uint GetDoubleClickTime();
     }
     private void Settings_OnClick(object sender, RoutedEventArgs e) { var window = new SettingsWindow(_services) { Owner = this }; window.ShowDialog(); _ = _viewModel.InitializeAsync(); }
     private void Manage_OnClick(object sender, RoutedEventArgs e) { var window = new ManagementWindow(_services) { Owner = this }; window.ShowDialog(); _ = _viewModel.SearchAsync(); }

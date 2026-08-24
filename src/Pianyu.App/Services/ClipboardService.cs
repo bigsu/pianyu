@@ -34,20 +34,29 @@ public sealed class ClipboardService : IDisposable
     {
         for (var attempt = 0; attempt < 4; attempt++)
         {
-            try
+            var handle = NativeMethods.GlobalAlloc(NativeMethods.GmemMoveable | NativeMethods.GmemZeroInit, (nuint)((text.Length + 1) * sizeof(char)));
+            if (handle == nint.Zero) return false;
+            var pointer = NativeMethods.GlobalLock(handle);
+            if (pointer == nint.Zero)
             {
-                // copy=true flushes the data into the Windows clipboard instead of
-                // leaving it dependent on this process as the clipboard owner.
-                var data = new DataObject();
-                data.SetData(DataFormats.UnicodeText, text);
-                data.SetData(DataFormats.Text, text);
-                Clipboard.SetDataObject(data, true);
-                return true;
+                NativeMethods.GlobalFree(handle);
+                return false;
             }
-            catch (ExternalException)
+            Marshal.Copy(text.ToCharArray(), 0, pointer, text.Length);
+            Marshal.WriteInt16(pointer, text.Length * sizeof(char), 0);
+            NativeMethods.GlobalUnlock(handle);
+
+            if (NativeMethods.OpenClipboard(_source?.Handle ?? nint.Zero))
             {
-                Thread.Sleep(30 * (attempt + 1));
+                try
+                {
+                    if (NativeMethods.EmptyClipboard() && NativeMethods.SetClipboardData(NativeMethods.CfUnicodeText, handle) != nint.Zero)
+                        return true;
+                }
+                finally { NativeMethods.CloseClipboard(); }
             }
+            NativeMethods.GlobalFree(handle);
+            Thread.Sleep(10 * (attempt + 1));
         }
         return false;
     }
@@ -105,7 +114,18 @@ public sealed class ClipboardService : IDisposable
     private static class NativeMethods
     {
         internal const int WmClipboardUpdate = 0x031D;
+        internal const uint CfUnicodeText = 13;
+        internal const uint GmemMoveable = 0x0002;
+        internal const uint GmemZeroInit = 0x0040;
         [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool AddClipboardFormatListener(nint hwnd);
         [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool RemoveClipboardFormatListener(nint hwnd);
+        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool OpenClipboard(nint hwnd);
+        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool CloseClipboard();
+        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool EmptyClipboard();
+        [DllImport("user32.dll")] internal static extern nint SetClipboardData(uint format, nint memory);
+        [DllImport("kernel32.dll", SetLastError = true)] internal static extern nint GlobalAlloc(uint flags, nuint bytes);
+        [DllImport("kernel32.dll", SetLastError = true)] internal static extern nint GlobalLock(nint memory);
+        [DllImport("kernel32.dll", SetLastError = true)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool GlobalUnlock(nint memory);
+        [DllImport("kernel32.dll", SetLastError = true)] internal static extern nint GlobalFree(nint memory);
     }
 }
