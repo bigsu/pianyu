@@ -62,9 +62,16 @@
         </Grid>
 
         <Grid Grid.Row="2" Margin="16,0,16,0">
-            <ListBox x:Name="ResultList" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedSnippet}" SelectionMode="Single"
-                     ItemContainerStyle="{StaticResource CompactSnippetItem}" PreviewMouseLeftButtonDown="ResultList_OnPreviewMouseLeftButtonDown"
-                     Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="150" />
+                <RowDefinition Height="14" />
+                <RowDefinition x:Name="HomeDetailRow" Height="164" MinHeight="104" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <ListBox x:Name="ResultList" ItemsSource="{Binding Results}" SelectedItem="{Binding SelectedSnippet}" SelectionMode="Single"
+                         ItemContainerStyle="{StaticResource CompactSnippetItem}" PreviewMouseLeftButtonDown="ResultList_OnPreviewMouseLeftButtonDown"
+                         Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid MinHeight="76">
@@ -89,13 +96,79 @@
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
-            </ListBox>
+                </ListBox>
 
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24" Visibility="{Binding HasResults, Converter={StaticResource BoolCollapsed}}">
-                <TextBlock Text="{Binding EmptyTitle}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
-                <TextBlock Text="{Binding EmptyMessage}" Foreground="{DynamicResource TextMutedBrush}" TextAlignment="Center" Margin="0,8,0,12" />
-                <Button Content="新建片段" Style="{StaticResource PrimaryButton}" Click="NewSnippet_OnClick" HorizontalAlignment="Center" />
-            </StackPanel>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24" Visibility="{Binding HasResults, Converter={StaticResource BoolCollapsed}}">
+                    <TextBlock Text="{Binding EmptyTitle}" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock Text="{Binding EmptyMessage}" Foreground="{DynamicResource TextMutedBrush}" TextAlignment="Center" Margin="0,8,0,12" />
+                    <Button Content="新建片段" Style="{StaticResource PrimaryButton}" Click="NewSnippet_OnClick" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+
+            <GridSplitter Grid.Row="1"
+                          Height="14"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          ResizeDirection="Rows"
+                          ResizeBehavior="PreviousAndNext"
+                          ShowsPreview="False"
+                          Cursor="SizeNS"
+                          Background="Transparent"
+                          Focusable="False">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Grid Background="Transparent">
+                            <Border Width="52" Height="3" CornerRadius="2"
+                                    Background="{DynamicResource BorderBrush}"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
+            <Grid Grid.Row="2">
+                <Border Style="{StaticResource Card}" Padding="14,12"
+                        Visibility="{Binding HasSelection, Converter={StaticResource BoolVisible}}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding SelectedSnippet.Title}"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       FontSize="14" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                            <ItemsControl Grid.Column="1" ItemsSource="{Binding SelectedSnippet.Tags}" Margin="12,0,0,0">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource SnippetTag}">
+                                            <TextBlock Text="{Binding}" Foreground="{DynamicResource AccentBrush}" FontSize="12" FontWeight="SemiBold" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                        <TextBox Grid.Row="1" Margin="0,9,0,0"
+                                 Style="{StaticResource SelectableDetailText}"
+                                 Text="{Binding SelectedSnippet.Content, Mode=OneWay}"
+                                 FontFamily="Cascadia Mono, Consolas, Microsoft YaHei UI"
+                                 FontSize="13"
+                                 AutomationProperties.Name="当前片段正文" />
+                    </Grid>
+                </Border>
+                <Border Style="{StaticResource Card}" Padding="14,12"
+                        Visibility="{Binding HasSelection, Converter={StaticResource BoolCollapsed}}">
+                    <TextBlock Text="选择一个片段后，在这里查看完整正文。"
+                               Foreground="{DynamicResource TextMutedBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </Grid>
         </Grid>
 
         <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" Padding="16,10">

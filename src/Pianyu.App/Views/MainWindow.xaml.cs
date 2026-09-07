@@ -27,12 +27,23 @@ public partial class MainWindow : Window
         Loaded += async (_, _) =>
         {
             await _viewModel.InitializeAsync();
+            UpdateHomeDetailHeightLimit();
             RootPanel.Focus();
         };
+        SizeChanged += (_, _) => UpdateHomeDetailHeightLimit();
         PreviewKeyDown += OnPreviewKeyDown;
         services.Clipboard.CandidateAvailable += (_, text) => Dispatcher.Invoke(() => OpenClipboardCapture(text, true));
         services.Clipboard.ListeningTick += (_, remaining) => Dispatcher.Invoke(() => ShowStatus($"剪贴板监听中  {(int)remaining.TotalMinutes:00}:{remaining.Seconds:00} · 候选仍需确认"));
         services.Clipboard.ListeningStopped += (_, _) => Dispatcher.Invoke(() => ShowStatus("剪贴板临时监听已结束"));
+    }
+
+    private void UpdateHomeDetailHeightLimit()
+    {
+        if (RootPanel.ActualHeight <= 0) return;
+        var maximumHeight = Math.Max(104, RootPanel.ActualHeight / 2);
+        HomeDetailRow.MaxHeight = maximumHeight;
+        if (HomeDetailRow.Height.IsAbsolute && HomeDetailRow.Height.Value > maximumHeight)
+            HomeDetailRow.Height = new GridLength(maximumHeight);
     }
 
     public void ShowAndActivate()
