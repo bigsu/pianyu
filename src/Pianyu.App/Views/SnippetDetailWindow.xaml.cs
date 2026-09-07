@@ -33,9 +33,12 @@ public sealed class SnippetDetailViewModel : ObservableObject
     public Snippet Snippet { get; }
     public IReadOnlyList<ExplodedSnippetBlockViewModel> Blocks { get; }
     public bool HasSelectedBlocks => Blocks.Any(block => block.IsSelected);
+    public int SelectedBlockCount => Blocks.Count(block => block.IsSelected);
     public string SelectionSummary => HasSelectedBlocks
-        ? $"已选择 {Blocks.Count(block => block.IsSelected)} 个正文块 · 按点击顺序拼接复制"
+        ? $"已选择 {SelectedBlockCount} 个正文块 · 按点击顺序拼接复制"
         : $"正文已按分隔符拆分为 {Blocks.Count} 个块 · 点击块进行连续选择";
+    public string SelectedDetailTitle => HasSelectedBlocks ? $"选中块详情 · {SelectedBlockCount} 块" : "选中块详情";
+    public string SelectedTextPreview => HasSelectedBlocks ? GetSelectedText() : "点击上方正文块后，将在这里按选择顺序显示完整内容。";
 
     public SnippetDetailViewModel(Snippet snippet)
     {
@@ -48,7 +51,10 @@ public sealed class SnippetDetailViewModel : ObservableObject
         block.IsSelected = !block.IsSelected;
         ReindexSelection();
         OnPropertyChanged(nameof(HasSelectedBlocks));
+        OnPropertyChanged(nameof(SelectedBlockCount));
         OnPropertyChanged(nameof(SelectionSummary));
+        OnPropertyChanged(nameof(SelectedDetailTitle));
+        OnPropertyChanged(nameof(SelectedTextPreview));
     }
 
     public string GetSelectedText() => string.Join(" ",

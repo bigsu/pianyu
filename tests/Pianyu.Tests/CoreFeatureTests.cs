@@ -131,5 +131,11 @@ public sealed class TextFeatureTests
         detail.ToggleBlock(detail.Blocks[4]);
         detail.ToggleBlock(detail.Blocks[0]);
         Assert.AreEqual("第三段 第一段", detail.GetSelectedText());
+        Assert.AreEqual("第三段 第一段", detail.SelectedTextPreview);
+        Assert.AreEqual("选中块详情 · 2 块", detail.SelectedDetailTitle);
+
+        detail.ToggleBlock(detail.Blocks[4]);
+        Assert.AreEqual("第一段", detail.SelectedTextPreview);
+        Assert.AreEqual(1, detail.SelectedBlockCount);
     }
 }
